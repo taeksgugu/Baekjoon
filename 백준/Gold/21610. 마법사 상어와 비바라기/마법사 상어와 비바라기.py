@@ -2,17 +2,6 @@ import sys
 input = sys.stdin.readline
 N, M = map(int, input().rstrip().split())
 arr = [list(map(int, input().rstrip().split())) for _ in range(N)]
-### 좌표 조정 함수 만들기 (다 연결되기 때문)
-def control(i):
-    if i < 0:
-        if (-1)*i % N == 0:
-            return 0
-        else:
-            return i + ((-1) * i // N + 1) * N
-    elif 0<=i<N:
-        return i
-    else:
-        return i % N
 ### 방향 리스트 만들기 ←, ↖, ↑, ↗, →, ↘, ↓, ↙
 dirlst = [(0,-1), (-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1)]
 
@@ -27,7 +16,7 @@ for _ in range(M):
     check = set()
     while cloudlst:
         i, j = cloudlst.pop()
-        ci, cj = control(i+di), control(j+dj)
+        ci, cj = (i+di)%N, (j+dj)%N ### 좌표 조정-> 이어지기 때문
         check.add((ci,cj))
         arr[ci][cj] += 1
 
