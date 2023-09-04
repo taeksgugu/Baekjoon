@@ -23,15 +23,17 @@ cloudlst = [(N-1,0), (N-1,1), (N-2,0), (N-2,1)]
 for _ in range(M):
     di, si = map(int, input().rstrip().split())
     di, dj = map(lambda x: x*si, dirlst[di-1])
-    ### di 방향으로 si칸 이동
-    cloudlst = [(control(i+di), control(j+dj)) for i,j in cloudlst]
-    ### 구름 있는 칸 바구니의 물 양 증가
-    for cloud_i, cloud_j in cloudlst:
-        arr[cloud_i][cloud_j] += 1
+    ### di 방향으로 si칸 이동 & 구름 있는 칸 바구니의 물 양 증가
+    check = set()
+    while cloudlst:
+        i, j = cloudlst.pop()
+        ci, cj = control(i+di), control(j+dj)
+        check.add((ci,cj))
+        arr[ci][cj] += 1
 
     ### 구름 사라짐 -> 나중에 사라진 칸 체크를 위해 남겨놓음
     ### 2에서 물이 증가한 칸 물복사 시전
-    for cloud_i, cloud_j in cloudlst:
+    for cloud_i, cloud_j in check:
         cnt = 0
         for ki, kj in [(-1,-1), (-1,1), (1,-1), (1,1)]:
             ni, nj = cloud_i+ki, cloud_j+kj
@@ -40,12 +42,10 @@ for _ in range(M):
         arr[cloud_i][cloud_j] += cnt
 
     ### 2이상인 칸 구름 생성
-    newcloud = []
     for i in range(N):
         for j in range(N):
-            if (i,j) not in cloudlst and arr[i][j] >=2:
-                newcloud.append((i,j))
+            if (i,j) not in check and arr[i][j] >=2:
+                cloudlst.append((i,j))
                 arr[i][j] -= 2
-    cloudlst = newcloud
 
 print(sum(x for y in arr for x in y))
