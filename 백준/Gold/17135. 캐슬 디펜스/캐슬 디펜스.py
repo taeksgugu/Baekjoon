@@ -1,66 +1,41 @@
-### 한번 틀린 이유: di,dj 쓸 때 좌표 실수
 import sys
-from collections import deque
 input = sys.stdin.readline
-### 기존 입력값 받기
 N, M, D = map(int, input().rstrip().split())
-arr = []
-enemylst = [] ### 적이 있는 리스트 생성
-for i in range(N):
-    line = input().rstrip().split()
-    for j in range(M):
-        if line[j] == '1':
-            enemylst.append((i,j))
-    arr.append(line)
+arr = [list(map(int, input().rstrip().split())) for _ in range(N)]
 
-### 궁수 조합에서 제거 가능한 적 수 계산하기
-answer = 0
-def killenemy(lst):
-    killcnt, enemies = 0, enemylst ### 초기화
-    while enemies: ### 적이 없어질 때까지
-        removelst = set()
-        for archer_j in lst: ### 생성된 조합에서 궁수 한명을 뽑아서 한턴 진행
-            visited = [[0]*M for _ in range(N)]
-            findenemy = deque()
-            dist, go = 1, True
-            while dist<=D:
-                if dist == 1:
-                    if (N-1, archer_j) in enemies:
-                        removelst.add((N-1, archer_j))
-                        break
-                    else:
-                        findenemy.append((N-1, archer_j))
-                        visited[N-1][archer_j] = 1
-                        dist += 1
-                else:
-                    for _ in range(len(findenemy)):
-                        i, j = findenemy.popleft()
-                        for di, dj in [(0,-1), (-1,0), (0,1)]:
-                            ni, nj = i+di, j+dj
-                            if (ni,nj) in enemies:
-                                removelst.add((ni,nj))
-                                go = False
-                                break
-                            elif 0<=ni<N and 0<=nj<M and visited[ni][nj] == 0:
-                                visited[ni][nj] = 1
-                                findenemy.append((ni,nj))
-                        if not go: break
-                    if not go: break
-                    dist += 1
-        newenemy = []
-        for enem_i, enem_j in enemies:
-            if (enem_i, enem_j) in removelst: killcnt += 1
-            elif enem_i+1 < N: newenemy.append((enem_i+1, enem_j))
-        enemies = newenemy
-    return killcnt
-### 궁수 조합 만들기
-answer = 0
-def archercomb(n, idx, lst):
-    global answer
-    if n == 3:
-        answer = max(answer, killenemy(lst))
+enemy = []
+for i in range(N):
+    for j in range(M):
+        if arr[i][j] == 1: enemy.append((i,j))
+enemy.sort(key=lambda x : x[1])         # 거리가 같으면 가장 왼쪽에 있는 적 (j 작은순 정렬)
+
+goungs = [0, 0, 0]  # 궁수 리스트
+def dfs(n, i) :     # dfs에 리스트 담지 않고 넘기기 연습중
+    global ans
+    if n == 3 :
+        ans = max(ans, game(goungs, enemy))
         return
-    for i in range(idx+1, M):
-        archercomb(n+1, i, lst+[i])
-archercomb(0,-1,[])
-print(answer)
+    for j in range(i,M) :
+        goungs[n] = j
+        dfs(n+1, j+1)
+def game(goungs, enemy) :
+    kill_cnt = 0
+    while enemy :
+        kill = set()
+        for goung in goungs :       # 각각의 궁수들(N, j)에 대해서  가까운 적 찾기
+            x, y, d = -1, -1, D+1
+            for r, c in enemy :
+                n_d = (N-r) + abs(goung - c)
+                if n_d < d: x, y, d = r, c, n_d     # 거리가 작아질 때만 갱신
+            kill.add((x, y))
+        temp = []
+        for r, c in enemy:
+            if (r, c) in kill: kill_cnt += 1
+            elif r < N-1 :
+                temp.append((r+1, c))
+        enemy = temp               # 턴마다 적의 위치 디버깅하기 좋음~
+    return kill_cnt
+
+ans = 0
+dfs(0, 0)
+print(ans)
