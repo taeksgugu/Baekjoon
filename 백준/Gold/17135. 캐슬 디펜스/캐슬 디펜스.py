@@ -1,12 +1,12 @@
 import sys
 input = sys.stdin.readline
 N, M, D = map(int, input().rstrip().split())
-arr = [list(map(int, input().rstrip().split())) for _ in range(N)]
+arr = [input().rstrip().split() for _ in range(N)]
 
 enemy = []
 for i in range(N):
     for j in range(M):
-        if arr[i][j] == 1: enemy.append((i,j))
+        if arr[i][j] == '1': enemy.append((i,j))
 enemy.sort(key=lambda x : x[1])         # 거리가 같으면 가장 왼쪽에 있는 적 (j 작은순 정렬)
 
 goungs = [0, 0, 0]  # 궁수 리스트
@@ -20,9 +20,9 @@ def dfs(n, i) :     # dfs에 리스트 담지 않고 넘기기 연습중
         dfs(n+1, j+1)
 def game(goungs, enemy) :
     kill_cnt = 0
-    while enemy :
+    while enemy:
         kill = set()
-        for goung in goungs :       # 각각의 궁수들(N, j)에 대해서  가까운 적 찾기
+        for goung in goungs:       # 각각의 궁수들(N, j)에 대해서  가까운 적 찾기
             x, y, d = -1, -1, D+1
             for r, c in enemy :
                 n_d = (N-r) + abs(goung - c)
