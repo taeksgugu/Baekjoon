@@ -1,63 +1,47 @@
 import sys
 from collections import deque
 input = sys.stdin.readline
-
 N, M = map(int, input().rstrip().split())
-arr = [list(map(int, input().rstrip().split())) for _ in range(N)]
-newarr = arr[::]
-spacelst = []
-cnt = 0
-casecnt = 0
-def dfs(i,j):
-    queue = deque([(i,j)])
-    visited[i][j] = 2
-    while queue:
-        node_i, node_j = queue.popleft()
-        visited[node_i][node_j] = 2
-        for di, dj in [(0,1), (0,-1), (1,0),(-1,0)]:
-            ni, nj = node_i+di, node_j+dj
-            if 0<=ni<N and 0<=nj<M and arr[ni][nj] == 0 and visited[ni][nj] == 0:
-                queue.append((ni,nj))
+arr = []
+viruslst = []
+emptylst = []
+emptycnt = 0
 for i in range(N):
+    line = input().rstrip().split()
     for j in range(M):
-        if arr[i][j] == 0:
-            cnt += 1
-            spacelst.append((i,j))
+        if line[j] == '2':
+            viruslst.append((i,j))
+        elif line[j] == '0':
+            emptylst.append((i,j))
+            emptycnt += 1
+    arr.append(line)
+### 안전구역 계산
+def bfs(lst):
+    global answer
+    q = deque(viruslst)
+    visited = [[0]*M for _ in range(N)]
+    newcnt = emptycnt-3
+    for i,j in q:
+        visited[i][j] = 1
+    for vi,vj in lst:
+        visited[vi][vj] = 1
+    while q:
+        i, j = q.popleft()
+        for di, dj in [(0,1), (0,-1), (1,0), (-1,0)]:
+            ni, nj = i+di, j+dj
+            if 0<=ni<N and 0<=nj<M and arr[ni][nj]=='0' and visited[ni][nj] == 0:
+                q.append((ni,nj))
+                visited[ni][nj] = 1
+                newcnt -= 1
+    answer = max(answer, newcnt)
 
-for a in range(cnt):
-    for b in range(a+1, cnt):
-        for c in range(b+1, cnt):
-            case = cnt
-            wx1, wy1 = spacelst[a]
-            wx2, wy2 = spacelst[b]
-            wx3, wy3 = spacelst[c]
-            arr[wx1][wy1] = 1
-            arr[wx2][wy2] = 1
-            arr[wx3][wy3] = 1
-            visited = [[0]*M for _ in range(N)]
-            for i in range(N):
-                for j in range(M):
-                    if arr[i][j] == 2:
-                        case += 1
-                        dfs(i,j)
-            for i in range(N):
-                for j in range(M):
-                    if visited[i][j] == 2:
-                        case -= 1
-            # if case > casecnt and case>=29:
-            #     print(wx1,wy1, wx2,wy2,wx3,wy3)
-            #     print(case)
-            #     for pp in arr:
-            #         print(pp)
-            #     print()
-            #     for l in visited:
-            #         print(l)
-            #     print()
-            arr[wx1][wy1] = 0
-            arr[wx2][wy2] = 0
-            arr[wx3][wy3] = 0
-
-
-            casecnt = max(casecnt, case-3)
-
-print(casecnt)
+### 벽 세우는 경우의 수 만들기
+answer = 0
+def dfs(n, idx, lst):
+    if n == 3:
+        bfs(lst)
+        return
+    for i in range(idx+1, emptycnt):
+        dfs(n+1, i, lst+[emptylst[i]])
+dfs(0,-1,[])
+print(answer)
