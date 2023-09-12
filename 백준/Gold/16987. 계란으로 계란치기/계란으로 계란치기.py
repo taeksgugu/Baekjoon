@@ -10,17 +10,12 @@ for _ in range(N):
 answer = 0
 def egg(n):
     global answer
-
     cnt = len([x for x in slst if x <= 0])
     answer = max(answer, cnt)
-    # print(n, cnt, slst)
+    if answer == N:
+        return
     if n == N:
-        answer = max(answer, cnt)
         return
-    if N - cnt == 0:
-        answer = N
-        return
-
     if slst[n] <= 0: egg(n+1)
     else:
         for i in range(N):
@@ -30,6 +25,5 @@ def egg(n):
                 egg(n+1)
                 slst[i] += wlst[n]
                 slst[n] += wlst[i]
-
 egg(0)
 print(answer)
