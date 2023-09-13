@@ -6,9 +6,13 @@
 ### 2차 시도: 205832kb 1244ms
 ### 시간 단축을 위해 연합별 리스트를 생성하지 않고 연합을 확인하자마자 인구 배정하는 방식으로 변경 -> 연합별 리스트를 순회할 필요가 없기 때문에 간편함
 ### 2번 제출했는데 한번은 더 걸림... 유의미한 차이가 없음
-### 3차 시도:
+### 3차 시도: 120960kb 780ms
 ### graph를 생성하고 움직이는 것보다 처음부터 bfs를 하되 인구 차가 L이상 R이하인 경우를 넣어서 돌린다면 더욱더 줄일 수 있다고 판단
 ### 개선하는 과정에서 새로운 인구 배정을 할 때 실수로 = 이 아닌 ==을 입력해서 테케 해결에 시간이 걸림
+### 4차 시도:
+### unitednum 선언을 하지 않고 idx를 연장해서 사용
+
+### 문제 후기 : 구현에 난이도는 없었지만 풀면 풀수록 더 최적화할 수 있다는걸 알게 됨. 풀이 과정을 한번 보고 더 최적화하는 방안 고려 필요
 import sys
 input = sys.stdin.readline
 ### 입력
@@ -24,9 +28,8 @@ def solve():
         for i in range(N):
             for j in range(N):
                 if checkv[i][j] == 0:
-                    united, total = [(i,j)], arr[i][j] ### 연합리스트와 총 인구 수
+                    united, total, idx = [(i,j)], arr[i][j], 0 ### 연합리스트 / 총 인구 수 / 순회할 인덱스번호
                     checkv[i][j] = 1 ### 다른 칸에 가도 해당 칸은 체크할 필요 없음
-                    idx = 0
                     while idx<len(united):
                         ci, cj = united[idx]
                         for di, dj in [(0,1), (0,-1), (1,0), (-1,0)]:
@@ -36,11 +39,10 @@ def solve():
                                     united.append((ni,nj))
                                     checkv[ni][nj] = 1
                                     total += arr[ni][nj]
-                        idx += 1
-                    unitednum = len(united)
-                    newnum = total//unitednum
+                        idx += 1 ### while문 벗어나면 idx가 곧 연합리스트 길이
+                    newnum = total//idx ### 새로 배정할 인구수
 
-                    if unitednum > 1: ### 국경선이 열릴 연합이 있다는 말
+                    if idx > 1: ### 국경선이 열릴 연합이 있다는 말
                         for ki, kj in united:
                             arr[ki][kj] = newnum
                         cnt += 1
