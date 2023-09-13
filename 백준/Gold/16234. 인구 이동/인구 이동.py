@@ -1,7 +1,11 @@
+### 1차 시도: 206240kb 1276ms 풀이 시간: 30분
 ### 초기 풀이 과정
 ### 우선 인구 차이를 확인하면서 딕셔너리형태로 그래프를 생성하고, 국경선이 열려야할 경우마다 cnt+1을 진행
 ### 만약 cnt가 0이라면 이동 불가 상태로 멈추게 지정
 ### 이후 연합이 여러개일 가능성을 두고 island 몇 개인지 확인하듯이 몇개인지 확인하고 인구 이동 진행
+### 2차 시도: 205832kb 1280ms 
+### 시간 단축을 위해 연합별 리스트를 생성하지 않고 연합을 확인하자마자 인구 배정하는 방식으로 변경 -> 연합별 리스트를 순회할 필요가 없기 때문에 간편함
+### 오히려 오래 걸림.... 이유는 모르겠음...
 
 import sys
 from collections import deque
@@ -33,34 +37,26 @@ def solve():
 
         ### 연합 수 확인
         visited = [[0]*N for _ in range(N)]
-        num = 1 ### 연합수를 나타내는 변수
-        unitedlst, peoplelst = [], [] ### 연합별 리스트 & 해당 연합에 분배될 인구 리스트
         for i in range(N):
             for j in range(N):
-                # print(i,j)
                 if graph[(i,j)] and visited[i][j] == 0: ### 국경선이 열린 국가라면 연합의 스타트 & 이미 연합 처리 안한 국가
                     q = deque()
                     q.append((i,j))
                     total = arr[i][j] ### 인구 합 구하는 변수
                     nearlst = [(i,j)] ### 같이 연합인 국가 리스트
-                    visited[i][j] = num
+                    visited[i][j] = 1
                     while q:
                         ci, cj = q.popleft()
                         for neari, nearj in graph[(ci,cj)]:
                             if visited[neari][nearj] == 0:
-                                visited[neari][nearj] = num ### 방문처리
+                                visited[neari][nearj] = 1 ### 방문처리
                                 q.append((neari, nearj))    ### q에 추가
                                 nearlst.append((neari, nearj))     ### 같은 연합 처리
                                 total += arr[neari][nearj]        ### 인구 합 처리
-                    unitedlst.append(nearlst)               ### 연합 리스트에 추가
-                    peoplelst.append(total//len(nearlst))   ### 배정할 인구 추가
-                    num += 1
+                    newnum = total//len(nearlst)
+                    for ki, kj in nearlst:
+                        arr[ki][kj] = newnum
 
-        ### 연합별 인구 배정
-        for idx in range(num-1):
-            united, newnum = unitedlst[idx], peoplelst[idx]
-            for ki, kj in united:
-                arr[ki][kj] = newnum
         ### 하루 지남
         day += 1
 
