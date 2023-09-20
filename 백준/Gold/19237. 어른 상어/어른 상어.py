@@ -67,42 +67,27 @@ def checksmell(smellarr, num):
                 return [ni,nj, dirnum]
 
 # 살아있는 상어의 수
-remain_shark = M
+remaincnt = M
 # 이동 횟수
 ans = 0
-# 현재 상어위치 기록 (냄새 기록을 위한 위치)
-# current_loc_shark = [[0, 0]] * (M+1)
-
-# for l in smellarr:
-#     print(l)
-#
-# print(sharkpos)
-while remain_shark > 1 and ans < 1001:
+while remaincnt > 1 and ans < 1001:
     # 상어 움직임
     for i in range(1, M + 1):
         # 현재 상어가 죽어있다면 건너뜀
         if sharkpos[i][0] == -1:
             continue
 
-        # cpos = sharkpos[i][0]
-        # # current_loc_shark[i] = cpos
-        # print(i, cpos)
-        empty_move = checknear(smellarr, i)
+        near = checknear(smellarr, i)
 
         # 인접한 칸 비어있는지 확인
-        if empty_move:
-            newi, newj, newdir = empty_move[0], empty_move[1], empty_move[2]
-            sharkpos[i][0][0], sharkpos[i][0][1] = newi,newj
-            sharkpos[i][1] = newdir
+        if near:
+            newi, newj, newdir = near
 
         else: ### 만약 인접한 곳에 빈 칸이 없다면 우선순위에 따른 움직임
             smell_move = checksmell(smellarr, i)
             newi, newj, newdir = smell_move[0], smell_move[1], smell_move[2]
-            sharkpos[i][0][0], sharkpos[i][0][1] = newi, newj
-            sharkpos[i][1] = newdir
-
-        # print(i, cpos)
-
+        sharkpos[i][0][0], sharkpos[i][0][1] = newi, newj
+        sharkpos[i][1] = newdir
 
     # 죽은 상어 있는지 확인 후 업데이트
     deadcnt = 0
@@ -116,7 +101,7 @@ while remain_shark > 1 and ans < 1001:
                 sharkpos[max(i, j)][0] = -1 ### 큰 번호 죽음
                 deadcnt += 1 ### 죽은 상어수 + 1
 
-    remain_shark -= deadcnt
+    remaincnt -= deadcnt
 
     # 냄새 처리
     for i in range(N):
@@ -129,13 +114,8 @@ while remain_shark > 1 and ans < 1001:
     # 상어 냄새 남기기
     for i in range(1, M+1):
         if sharkpos[i][0] != -1: ### 살아있다면
-            # x, y = current_loc_shark[i][0], current_loc_shark[i][1]
             nsi, nsj = sharkpos[i][0]
             smellarr[nsi][nsj] = [i, K]
-    # for l in smellarr:
-    #     print(l)
-    # print(sharkpos)
-    # print()
     ans += 1
 
 if ans > 1000:
