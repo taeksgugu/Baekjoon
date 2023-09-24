@@ -6,13 +6,10 @@ N, M = map(int, input().rstrip().split())
 arr = []
 cctvlst, cctv5 = [], []
 caselst = []
-empty = 0
 for i in range(N):
     line = input().rstrip().split()
     for j in range(M):
-        if line[j] == '0':
-            empty += 1
-        elif line[j] != '6':
+        if line[j] != '0' and line[j] != '6':
             if line[j] == '5': ### 무조건 다 살펴보는 CCTV
                 cctv5.append((i,j))
             else:
@@ -30,7 +27,6 @@ for ci,cj in cctv5:
             if 0<=ni<N and 0<=nj<M:
                 if arr[ni][nj] == '0':
                     arr[ni][nj] = '#'
-                    empty -= 1
                 elif arr[ni][nj] == '6':
                     break
                 k += 1
@@ -50,10 +46,10 @@ cctvdict = {'1':[[(0,1)],[(1,0)],[(-1,0)],[(0,-1)]],
             '2':[[(0,-1),(0,1)], [(-1,0),(1,0)]],
             '3':[[(0,1),(-1,0)], [(0,1),(1,0)], [(0,-1),(1,0)], [(0,-1),(-1,0)]],
             '4':[[(0,-1),(1,0),(-1,0)], [(0,1),(1,0),(-1,0)], [(0,1),(0,-1),(-1,0)], [(0,1),(0,-1),(1,0)]]}
+
 answer = N*M
 for case in allcase:
     newarr = deepcopy(arr)
-    cnt = empty
     for idx in range(len(case)):
         cctv_i, cctv_j, cctv_num = cctvlst[idx]
         for di, dj in cctvdict[cctv_num][case[idx]]:
@@ -63,12 +59,11 @@ for case in allcase:
                 if 0 <= ni < N and 0 <= nj < M:
                     if newarr[ni][nj] == '0':
                         newarr[ni][nj] = '#'
-                        cnt -= 1
                     elif newarr[ni][nj] == '6':
                         break
                     k += 1
                 else:
                     break
-
+    cnt = len([x for y in newarr for x in y if x == '0'])
     answer = min(cnt, answer)
 print(answer)
