@@ -1,36 +1,33 @@
+'''
+오후 1시 15분 start 30분 1차 제출
+이전과 같은 실수를 반복함 맨해튼 거리라고 생각해서 바로 계산하면 되는데 굳이 BFS를 해서 시간초과를 시킴...
+35분 2차 제출
+'''
 import sys
-from collections import deque
 input = sys.stdin.readline
-N, M = map(int, input().rstrip().split())
-arr = []
-chickenlst = []
-homelst = []
-housecnt = 0
+### 입력 받기
+N, M = map(int, input().split())
+arr = [list(map(int ,input().rstrip().split())) for _ in range(N)]
+houselst, chickenlst = [], []
 for i in range(N):
-    lst = input().rstrip().split()
     for j in range(N):
-        if lst[j] == '2':
-            chickenlst.append((i,j))
-            housecnt += 1
-        elif lst[j] == '1':
-            homelst.append((i,j))
-    arr.append(lst)
-answer = N**3
-### 도시 치킨 거리 구하기
-def bfs(case):
-    cnt = 0
-    for i, j in homelst:
-        distlst = [abs(ci-i)+abs(cj-j) for ci, cj in case]
-        cnt += min(distlst)
-    return cnt
-### 치킨 집 조합 구하기
-def makecomb(n, idx, lst):
+        if arr[i][j] == 1: houselst.append((i,j)) ### 집
+        elif arr[i][j] == 2: chickenlst.append((i,j)) ### 치킨 집
+
+def calcitydist(lst): ### 도시거리 구하는 함수
+    citydist = 0
+    for i, j in houselst:
+        citydist += min([abs(li-i)+abs(lj-j) for li, lj in lst])
+    return citydist
+
+answer = 1e9
+def choosechiken(n, idx, lst):
     global answer
     if n == M:
-        casedist = bfs(lst)
-        answer = min(casedist, answer)
+        answer = min(answer, calcitydist(lst))
         return
-    for i in range(idx+1, housecnt):
-        makecomb(n+1, i, lst+[chickenlst[i]])
-makecomb(0,-1,[])
+    for i in range(idx+1, len(chickenlst)):
+        choosechiken(n+1, i, lst+[chickenlst[i]])
+
+choosechiken(0,-1,[])
 print(answer)
