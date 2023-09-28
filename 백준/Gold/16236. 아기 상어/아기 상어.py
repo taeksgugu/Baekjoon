@@ -1,4 +1,3 @@
-### 1차 개선 -> findfish에 거리를 추가하지 않고 바로 return하는 방식으로 시간 단축 시도
 import sys
 from collections import deque
 input = sys.stdin.readline
@@ -18,25 +17,25 @@ def sharkfind(baby_i, baby_j):
                 ni,nj = i+di, j+dj
                 if 0<=ni<N and 0<=nj<N and visited[ni][nj] == -1 and arr[ni][nj] <= size:
                     if arr[ni][nj] < size and (ni,nj) in fishlst:
-                        findfish.append((ni,nj))
+                        findfish.append((ni,nj,dist))
                     else:
                         q.append((ni,nj))
                     visited[ni][nj] = dist
         if not findfish: ### 한번돌 때 찾은 물고기가 없다면 계속 진행
             dist += 1
         else:
-            return sorted(findfish), dist
-    return sorted(findfish), 0
+            return sorted(findfish)
+    return sorted(findfish)
 ### 전체 함수
 def solve():
     global baby_i,baby_j, size
     ### 변수 설정 (초기 아기 상어 크기 & 크기 커지기 전 먹은 물고기 수 & 시간)
     size, cnt, time = 2, 0, 0
     while True: ## 물고기 리스트에 아기 상어보다 작은 물고기가 없을 때까지
-        turnlst, distance = sharkfind(baby_i,baby_j) ### 해당 턴에 아기 상어가 물고기를 찾음
+        turnlst = sharkfind(baby_i,baby_j) ### 해당 턴에 아기 상어가 물고기를 찾음
         if turnlst:
             ### 젤 가깝고 가장 위, 가장 왼쪽 물고기 먹음
-            fish_i, fish_j = turnlst[0]
+            fish_i, fish_j, distance = turnlst[0]
             arr[baby_i][baby_j] = 0
             baby_i, baby_j = fish_i, fish_j
             time += distance
