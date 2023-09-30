@@ -17,7 +17,7 @@ for i in range(1, M+1):
 def solve():
     global si, sj, energy
     for _ in range(M):
-        # if energy == 0: return -1 ### 시작 안됨
+        if energy == 0: return -1 ### 시작 안됨
         ### 출발
         if (si,sj) not in passengerdic: ### 해당자리에 승객이 없다면?
             visited = [[0]*N for _ in range(N)]
