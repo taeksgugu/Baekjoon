@@ -1,41 +1,36 @@
-### 주어진 보호필름 강화 테스트 함수
-# def check():
-#     for lst in list(map(list, zip(*arr))):
-#         if not ('0' * K in ''.join(lst) or '1' * K in ''.join(lst)):
-#             return False
-#     return True
-def check():
+### 입력 받기
+def check(arr):
     for j in range(W):
-        same = 1
-        for i in range(D-1):
-            if same == K: break
-            elif arr[i][j] == arr[i+1][j]: same += 1
-            else: same = 1
-        if same != K: return False
+        start, cnt = arr[0][j], 1
+        for i in range(1, D):
+            num = arr[i][j]
+            if start == num: cnt += 1
+            else:
+                start, cnt = num, 1
+            if cnt==K: break
+        if cnt<K : return False
     return True
-### 몇 행에 약물 투입할지 백트래킹 함수
-def film(n, idx):
+
+def choosedrug(n, idx, arr):
     global answer
-    if check():
+    if check(arr):
         answer = min(answer, n)
         return
-    if n >= answer: return
+    if n>=answer: return
+    if n==D: return
     for i in range(idx+1, D):
-        if v[i] == 0:  ### 아직 약품 투입 안한 열이라면
-            v[i] = 1
-            lst = arr[i]
-            arr[i] = ['0'] * W
-            film(n+1, i)
-            arr[i] = ['1'] * W
-            film(n+1, i)
-            v[i] = 0
-            arr[i] = lst
+        newarr = [e[:] for e in arr]
+        lst = newarr[i]
+        newarr[i] = [0]*W
+        choosedrug(n+1, i, newarr)
+        newarr[i] = [1]*W
+        choosedrug(n+1, i, newarr)
+        newarr[i] = lst
+
 T = int(input())
 for tc in range(1, T+1):
     D, W, K = map(int, input().split())
-    arr = [input().split() for _ in range(D)]
-    v = [0] * D
-    answer = K
-    if K == 1: answer = 0
-    else: film(0, -1)
+    arr = [list(map(int, input().split())) for _ in range(D)]
+    answer = 1e9
+    choosedrug(0,-1,arr)
     print(f"#{tc} {answer}")
