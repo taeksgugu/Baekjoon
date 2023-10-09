@@ -7,11 +7,14 @@ for _ in range(M):
     heapq.heappush(queue, [d, s, e])
 parents = [i for i in range(N+1)]
 def find(x):
-    if parents[x]!=x:
-        parents[x] = find(parents[x])
+    if parents[x]==x:
+        return parents[x]
+    parents[x] = find(parents[x])
     return parents[x]
 def union(a,b):
-    parents[find(b)] = find(a)
+    a = find(a)
+    b = find(b)
+    parents[b] = a
 
 answer = 0
 while queue:
