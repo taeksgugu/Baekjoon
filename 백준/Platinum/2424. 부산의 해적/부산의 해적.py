@@ -27,6 +27,15 @@ def check(si,sj):
     return True
 def solve():
     while sq:
+        ### 해적 이동
+        for _ in range(len(pq)):
+            pi, pj = pq.popleft()
+            for di, dj in [(-1,0), (1,0), (0,-1), (0,1)]:
+                ni, nj = pi+di, pj+dj
+                if 0<=ni<N and 0<=nj<M and arr[ni][nj] == '.':
+                    arr[ni][nj] = 'V'
+                    pq.append((ni,nj))
+                    
         ### 수아 이동
         for _ in range(len(sq)):
             si, sj = sq.popleft()
@@ -36,17 +45,7 @@ def solve():
                     visited[ni][nj] = 1
                     sq.append((ni,nj))
                     # if arr[ni][nj] == 'T': return 'YES'
-
-        ### 해적 이동
-        for _ in range(len(pq)):
-            pi, pj = pq.popleft()
-            for di, dj in [(-1,0), (1,0), (0,-1), (0,1)]:
-                ni, nj = pi+di, pj+dj
-                if 0<=ni<N and 0<=nj<M and arr[ni][nj] == '.':
-                    arr[ni][nj] = 'V'
-                    pq.append((ni,nj))
-
-        ### 수아 생존 여부 확인
+### 수아 생존 여부 확인
         for _ in range(len(sq)):
             si, sj = sq.popleft()
             if check(si, sj):
