@@ -35,7 +35,7 @@ def dijkstra():
             if arr[ni][nj] == 'E':
                 # print('찾음')
                 answer = min(answer, dist)
-                # heapq.heappush(q, (dist, cur_d, ni - di, nj - dj))
+                heapq.heappush(q, (dist, cur_d, ni, nj))
                 break
             if arr[ni][nj] == 'R':
                 for idx in cango[cur_d]:
